@@ -28,8 +28,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ikeaz/cultureapp:latest
-            ikeaz/cultureapp:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/cultureapp:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/cultureapp:${{ github.sha }}
 
   deploy-to-ec2:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            docker pull preciousaz/together-culture-backend:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cultureapp:latest
 
             if [ "$(docker ps -q -f name=together_app)" ]; then
               docker stop together_app
@@ -53,4 +53,4 @@ jobs:
 
             docker run -d --name together_app \
               -p 5000:5000 \
-              preciousaz/together-culture-backend:latest
+              ${{ secrets.DOCKERHUB_USERNAME }}/cultureapp:latest
